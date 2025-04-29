@@ -109,7 +109,6 @@ void heapify(vector<int>& arr, int n, int i) {
 | 演算法 | 最佳情況 | 平均情況 | 最壞情況 | 空間複雜度 |
 |---------|---------|---------|---------|---------|
 | 插入排序 | O(n) | O(n^2) | O(n^2) | O(1) |
-| 選擇排序 | O(n^2) | O(n^2) | O(n^2) | O(1) |
 | 快速排序 | O(n log n) | O(n log n) | O(n^2) | O(logn) |
 | 合併排序 | O(n log n) | O(n log n) | O(n log n) | O(n) |
 | 堆疊排序 | O(n log n) | O(n log n) | O(n log n) | O(1) |
