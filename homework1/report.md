@@ -153,27 +153,27 @@ void testSorting(vector<int>& arr, void (*sortFunc)(vector<int>&), string sortNa
 
 ## 執行結果
 n=500
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/n_500.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/n_500.jpg)
 
 n=1000
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/n_1000.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/n_1000.jpg)
 
 n=2000
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/n_2000.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/n_2000.jpg)
 
 n=4000
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/n_4000.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/n_4000.jpg)
 
 n=5000
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/n_5000.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/n_5000.jpg)
 
 ## 排序演算法平均時間對比
 
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/avg.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/avg.jpg)
 
 ## 最壞情況執行時間對比
 
-![image](https://github.com/PoHsun1209/NFU-DS-homework1/blob/main/report/image/worst.jpg)
+![image](https://github.com/PoHsun1209/Homework/blob/main/homework1/image/worst.jpg)
 
 ---
 
