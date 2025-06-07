@@ -43,7 +43,7 @@
 2. 實作 MinHeap 類別。
 - 使用陣列模擬堆積。
 - 實作 Push (插入)、Pop (刪除最小值)、Top (取出最小值)、IsEmpty。
-- 操作時間複雜度為 O(log n)（插入與刪除），Top 和 IsEmpty 為 $O(1)$。
+- 操作時間複雜度為 $O(\log n)$（插入與刪除），Top 和 IsEmpty 為 $O(1)$。
 
 #### 題目二
 
@@ -62,11 +62,6 @@
   1. 無子節點：直接刪除。
   2. 一個子節點：用該子節點取代。
   3. 兩個子節點：用「右子樹中的最小節點」或「左子樹中的最大節點」取代。
-  
-######　時間複雜度為：
-
-- 最壞情況：O(h)，其中 h 為樹高。
-- 平均情況：若為平衡樹則約為 $O(\log n)$。
 
 #### 題目三
 
@@ -90,44 +85,150 @@
 |32|10*33+200|530|
 |63|10*64+200|840|
 
+3. 趨勢分析圖（f_input vs. k）
+
 ## 程式實作
 
-以下為主要程式碼：
+### 問題 1：最小優先佇列（MinHeap）
+
+說明
+使用 C++ 實作一個最小優先佇列（Min Priority Queue），採用最小堆（Min Heap）資料結構。主要操作有：
+- Push(): 插入新元素，透過向上調整（heapify up）維持堆性質。
+- Pop(): 移除最小元素，透過向下調整（heapify down）維持堆性質。
+- Top(): 取得最小元素（不移除）。
+- IsEmpty(): 檢查是否為空堆。
 
 ```cpp
-#include <iostream>
-using namespace std;
+template <class T>
+class MinHeap : public MinPQ<T> {
+private:
+    vector<T> heap;
 
-int sigma(int n) {
-    if (n < 0)
-        throw "n < 0";
-    else if (n <= 1)
-        return n;
-    return n + sigma(n - 1);
+    void heapifyUp(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[index] >= heap[parent]) break;
+            swap(heap[index], heap[parent]);
+            index = parent;
+        }
+    }
+
+    void heapifyDown(int index) {
+        int size = heap.size();
+        while (true) {
+            int smallest = index;
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+
+            if (left < size && heap[left] < heap[smallest])
+                smallest = left;
+            if (right < size && heap[right] < heap[smallest])
+                smallest = right;
+
+            if (smallest == index) break;
+            swap(heap[index], heap[smallest]);
+            index = smallest;
+        }
+    }
+
+public:
+    bool IsEmpty() const override { return heap.empty(); }
+    const T& Top() const override { return heap[0]; }
+    void Push(const T& element) override {
+        heap.push_back(element);
+        heapifyUp(heap.size() - 1);
+    }
+    void Pop() override {
+        heap[0] = heap.back();
+        heap.pop_back();
+        if (!heap.empty()) heapifyDown(0);
+    }
+};
+```
+
+### 問題 2：二元搜尋樹（BST）高度與刪除分析
+
+說明
+- 動態插入隨機整數節點。
+- 透過遞迴取得 BST 高度：getHeight()。
+- 用 $$\log2 n$$ 與實際高度作比較，分析隨機插入的效率。
+- 刪除節點時考慮：
+  - 無子節點（直接刪除）
+  - 一個子節點（接上子節點）
+  - 兩個子節點（找右子樹最小值代替）
+
+```cpp
+
+// 計算樹的高度（遞迴）
+int getHeight(BSTNode* node) {
+    if (!node) return 0;
+    return 1 + max(getHeight(node->left), getHeight(node->right));  // ✅ 重點：高度定義
 }
 
-int main() {
-    int result = sigma(3);
-    cout << result << '\n';
+// 刪除節點的遞迴處理
+BSTNode* deleteNode(BSTNode* node, int key) {
+    if (!node) return nullptr;
+
+    if (key < node->key) {
+        node->left = deleteNode(node->left, key);
+    } else if (key > node->key) {
+        node->right = deleteNode(node->right, key);
+    } else {
+        // ✅ 重點：找到目標節點並處理三種情況
+        if (!node->left) {
+            BSTNode* temp = node->right;
+            delete node;
+            return temp;
+        } else if (!node->right) {
+            BSTNode* temp = node->left;
+            delete node;
+            return temp;
+        }
+        // 兩個子節點：找右子樹最小節點
+        BSTNode* temp = findMin(node->right);
+        node->key = temp->key;
+        node->right = deleteNode(node->right, temp->key);
+    }
+    return node;
 }
+
+```
+
+### 問題三：外部排序第二階段輸入時間分析
+
+說明
+- 模擬磁碟合併排序的輸入時間。
+- 以不同 k 值（合併路數）計算 Pass 數與總時間。
+- 越大的 k → Pass 數少，但 CPU 合併負擔加重。
+
+```cpp
+
+int passes = ceil(log(m) / log(k));  //  重點：合併所需的 Pass 數
+double time_per_pass = ts + tl + n * tr;
+double total_input_time = passes * time_per_pass;
+
 ```
 
 ## 效能分析
 
-1. 時間複雜度：程式的時間複雜度為 $O(\log n)$。
-2. 空間複雜度：空間複雜度為 $O(100\times \log n + \pi)$。
+### 題目一：MinHeap 效能分析
+
+| 題目 | 操作 | 時間複雜度 | 空間複雜度 | 備註 |
+|--|--|--|--|--|
+| Min Heap | 插入 (Push) | $O(\log n)$ | $O(n)$ | Heap 使用陣列實作，節省空間 |
+|          | 取出最小值 (Pop) | $O(\log n)$ | $O(n)$ | heapifyDown 時最多 log n 步 |
+|          | 取得最小值 (Top) | $O(1)$      | $O(1)$ | 直接讀取 heap[0] |
+| BST 隨機插入 / 刪除 | 插入 (Insert) | $O(\log n)$ (平均) $O(n)$  (最差) | $O(n)$ | 平均情況為平衡樹；最差為鏈狀結構 |
+|                    | 刪除 (Delete) | $O(\log n)$ (平均) $O(n)$  (最差) | $O(n)$ | 需要尋找前驅 / 後繼節點 |
+|                    | 查詢高度 | $O(n)$ | $O(1)$ | 遞迴呼叫會用到額外堆疊記憶體 |
+| BST 高度分析 | 建樹後計算高度 | $O(n)$ | $O(1)$ | 單次 traversal |
+|             | $O(\log_2 n)$ | $O(1)$ | $O(1)$ | 數學運算，不需額外空間 |
+| 外部排序（第二階段）| 合併排序（每 pass）| $O(n\log_k m)$ | $O(k)$ + $O(n)$ | k：合併路數；n：每筆資料長度 |
+|                   | 每次輸入 | $O(n)$ | $O(n)$ | 須暫存每段開頭資料 |
 
 ## 測試與驗證
 
-### 測試案例
-
-| 測試案例 | 輸入參數 $n$ | 預期輸出 | 實際輸出 |
-|----------|--------------|----------|----------|
-| 測試一   | $n = 0$      | 0        | 0        |
-| 測試二   | $n = 1$      | 1        | 1        |
-| 測試三   | $n = 3$      | 6        | 6        |
-| 測試四   | $n = 5$      | 15       | 15       |
-| 測試五   | $n = -1$     | 異常拋出 | 異常拋出 |
+### 題目一：MinHeap 效能分析
 
 ### 編譯與執行指令
 
